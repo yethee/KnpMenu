@@ -2,21 +2,25 @@
 
 namespace Knp\Menu\Renderer;
 
-use \Knp\Menu\ItemInterface;
+use Knp\Menu\ItemInterface;
+use Knp\Menu\Matcher\MatcherInterface;
 
 /**
  * Renders MenuItem tree as unordered list
  */
 class ListRenderer extends Renderer implements RendererInterface
 {
+    protected $matcher;
     private $defaultOptions;
 
     /**
+     * @param \Knp\Menu\Matcher\MatcherInterface $matcher
      * @param array $defaultOptions
      * @param string $charset
      */
-    public function __construct(array $defaultOptions = array(), $charset = null)
+    public function __construct(MatcherInterface $matcher, array $defaultOptions = array(), $charset = null)
     {
+        $this->matcher = $matcher;
         $this->defaultOptions = array_merge(array(
             'depth' => null,
             'currentAsLink' => true,
@@ -25,6 +29,7 @@ class ListRenderer extends Renderer implements RendererInterface
             'firstClass' => 'first',
             'lastClass' => 'last',
             'compressed' => false,
+            'clear_matcher' => true,
         ), $defaultOptions);
 
         parent::__construct($charset);
@@ -41,7 +46,13 @@ class ListRenderer extends Renderer implements RendererInterface
     {
         $options = array_merge($this->defaultOptions, $options);
 
-        return $this->renderList($item, $item->getChildrenAttributes(), $options);
+        $html = $this->renderList($item, $item->getChildrenAttributes(), $options);
+
+        if ($options['clear_matcher']) {
+            $this->matcher->clear();
+        }
+
+        return $html;
     }
 
     protected function renderList(ItemInterface $item, array $attributes, array $options)
@@ -110,9 +121,9 @@ class ListRenderer extends Renderer implements RendererInterface
         // create an array than can be imploded as a class list
         $class = (array) $item->getAttribute('class');
 
-        if ($item->isCurrent()) {
+        if ($this->matcher->isCurrent($item)) {
             $class[] = $options['currentClass'];
-        } elseif ($item->isCurrentAncestor()) {
+        } elseif ($this->matcher->isAncestor($item, $options['depth'])) {
             $class[] = $options['ancestorClass'];
         }
 

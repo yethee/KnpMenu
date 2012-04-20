@@ -4,13 +4,20 @@ namespace Knp\Menu\Tests\Renderer;
 
 use Knp\Menu\MenuItem;
 use Knp\Menu\MenuFactory;
+use Knp\Menu\Matcher\MatcherInterface;
+use Knp\Menu\Matcher\Matcher;
 
 abstract class AbstractRendererTest extends \PHPUnit_Framework_TestCase
 {
     /**
      * @var \Knp\Menu\Renderer\RendererInterface
      */
-    private $renderer;
+    protected $renderer;
+
+    /**
+     * @var \Knp\Menu\Matcher\MatcherInterface
+     */
+    private $matcher;
 
     /**
      * @var \Knp\Menu\MenuItem
@@ -54,7 +61,8 @@ abstract class AbstractRendererTest extends \PHPUnit_Framework_TestCase
 
     public function setUp()
     {
-        $this->renderer = $this->createRenderer();
+        $this->matcher = new Matcher();
+        $this->renderer = $this->createRenderer($this->matcher);
 
         $this->menu = new MenuItem('Root li', new MenuFactory());
         $this->menu->setChildrenAttributes(array('class' => 'root'));
@@ -71,7 +79,7 @@ abstract class AbstractRendererTest extends \PHPUnit_Framework_TestCase
         $this->gc1 = $this->ch4->addChild('Grandchild 1');
     }
 
-    abstract protected function createRenderer();
+    abstract protected function createRenderer(MatcherInterface $matcher);
 
     public function tearDown()
     {

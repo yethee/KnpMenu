@@ -5,12 +5,13 @@ namespace Knp\Menu\Tests\Renderer;
 use Knp\Menu\Renderer\ListRenderer;
 use Knp\Menu\MenuItem;
 use Knp\Menu\MenuFactory;
+use Knp\Menu\Matcher\MatcherInterface;
 
 class ListRendererTest extends AbstractRendererTest
 {
-    protected function createRenderer()
+    protected function createRenderer(MatcherInterface $matcher)
     {
-        $renderer = new ListRenderer(array('compressed' => true));
+        $renderer = new ListRenderer($matcher, array('compressed' => true));
 
         return $renderer;
     }
@@ -22,7 +23,6 @@ class ListRendererTest extends AbstractRendererTest
         $menu->addChild('Parent 1');
         $menu->addChild('Parent 2');
 
-        $renderer = new ListRenderer();
         $rendered = <<<HTML
 <ul class="root">
   <li class="first">
@@ -35,6 +35,6 @@ class ListRendererTest extends AbstractRendererTest
 
 HTML;
 
-        $this->assertEquals($rendered, $renderer->render($menu));
+        $this->assertEquals($rendered, $this->renderer->render($menu, array('compressed' => false)));
     }
 }

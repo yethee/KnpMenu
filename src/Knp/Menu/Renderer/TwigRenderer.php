@@ -3,6 +3,7 @@
 namespace Knp\Menu\Renderer;
 
 use Knp\Menu\ItemInterface;
+use Knp\Menu\Matcher\MatcherInterface;
 use Knp\Menu\Renderer\RendererProviderInterface;
 use Knp\Menu\Provider\MenuProviderInterface;
 
@@ -12,16 +13,19 @@ class TwigRenderer implements RendererInterface
      * @var \Twig_Environment
      */
     private $environment;
+    private $matcher;
     private $defaultOptions;
 
     /**
      * @param \Twig_Environment $environment
      * @param string $template
+     * @param \Knp\Menu\Matcher\MatcherInterface $matcher
      * @param array $defaultOptions
      */
-    public function __construct(\Twig_Environment $environment, $template, array $defaultOptions = array())
+    public function __construct(\Twig_Environment $environment, $template, MatcherInterface $matcher, array $defaultOptions = array())
     {
         $this->environment = $environment;
+        $this->matcher = $matcher;
         $this->defaultOptions = array_merge(array(
             'depth' => null,
             'currentAsLink' => true,
@@ -31,6 +35,7 @@ class TwigRenderer implements RendererInterface
             'lastClass' => 'last',
             'template' => $template,
             'compressed' => false,
+            'clear_matcher' => true,
         ), $defaultOptions);
     }
 
@@ -52,6 +57,12 @@ class TwigRenderer implements RendererInterface
 
         $block = $options['compressed'] ? 'compressed_root' : 'root';
 
-        return $template->renderBlock($block, array('item' => $item, 'options' => $options));
+        $html = $template->renderBlock($block, array('item' => $item, 'options' => $options, 'matcher' => $this->matcher));
+
+        if ($options['clear_matcher']) {
+            $this->matcher->clear();
+        }
+
+        return $html;
     }
 }
