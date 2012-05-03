@@ -469,13 +469,6 @@ interface ItemInterface extends  \ArrayAccess, \Countable, \IteratorAggregate
     function getBreadcrumbsArray($subItem = null);
 
     /**
-     * Returns the current menu item if it is a child of this menu item
-     *
-     * @return \Knp\Menu\ItemInterface|null
-     */
-    function getCurrentItem();
-
-    /**
      * Sets whether or not this menu item is "current".
      *
      * If the state is unknown, use null.

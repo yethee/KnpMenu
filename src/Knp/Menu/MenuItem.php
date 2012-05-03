@@ -829,26 +829,6 @@ class MenuItem implements ItemInterface
     }
 
     /**
-     * Returns the current menu item if it is a child of this menu item
-     *
-     * @return \Knp\Menu\ItemInterface|null
-     */
-    public function getCurrentItem()
-    {
-        if ($this->isCurrent()) {
-            return $this;
-        }
-
-        foreach ($this->children as $child) {
-            if ($current = $child->getCurrentItem()) {
-                return $current;
-            }
-        }
-
-        return null;
-    }
-
-    /**
      * Set whether or not this menu item is "current".
      *
      * If the state is unknown, use null.
